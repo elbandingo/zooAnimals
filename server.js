@@ -8,6 +8,10 @@
 const express = require('express');
 const PORT = process.env.PORT || 3001;
 const app = express();
+//use the below to parse the data when incoming
+app.use(express.urlencoded({extended:true}));
+//parse incoming JSON data
+app.use(express.json());
 const { animals } = require('./data/animals.json');
 
 //creating a filter function
@@ -50,6 +54,18 @@ function findById(id,animalsArray) {
     return result;
 }
 
+//create a function to create a new animal
+function createNewAnimal(body, animalsArray) {
+    console.log(body);
+
+    //main function code here
+
+
+
+    //return the result of the finished code for the post result
+    return body;
+}
+
 //adding a route to the animals object
 app.get('/api/animals', (req, res) => {
     let results = animals;
@@ -73,4 +89,12 @@ app.get('/api/animals/:id', (req,res) => {
 //start the listener for express
 app.listen(PORT, () => {
     console.log(`API SERVER RUNNING ON PORT ${PORT}!`);
+});
+
+//set up a post route for animals being entered
+app.post('/api/animals', (req,res) =>{
+//set an ID based on what the next index of the animals array will be (the index of 0 but ID is 1, so going length is perfect for incrementing)
+req.body.id = animals.length.toString();
+
+res.json(req.body);
 });
