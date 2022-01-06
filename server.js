@@ -4,7 +4,8 @@
 //3 - required express, and assigned app to the require
 //4 - declared an object called animals where its data is equal to the json data in animals.json
 //5 - started the app listener to run on port 3001
-
+const fs = require('fs');
+const path = require('path');
 const express = require('express');
 const PORT = process.env.PORT || 3001;
 const app = express();
@@ -57,14 +58,32 @@ function findById(id,animalsArray) {
 //create a function to create a new animal
 function createNewAnimal(body, animalsArray) {
     console.log(body);
-
-    //main function code here
-
-
-
+    const animal = body;
+    //main function code here, updating the animals array first before sending it to the POST request
+    animalsArray.push(animal);
+    fs.writeFileSync(
+        path.join(__dirname, './data/animals.json'), JSON.stringify({animals: animalsArray}, null, 2)
+    );
     //return the result of the finished code for the post result
-    return body;
+    return animal;
 }
+
+//create function to validate animal inputs
+function validateAnimal(animal) {
+    if (!animal.name || typeof animal.name !== 'string') {
+      return false;
+    }
+    if (!animal.species || typeof animal.species !== 'string') {
+      return false;
+    }
+    if (!animal.diet || typeof animal.diet !== 'string') {
+      return false;
+    }
+    if (!animal.personalityTraits || !Array.isArray(animal.personalityTraits)) {
+      return false;
+    }
+    return true;
+  }
 
 //adding a route to the animals object
 app.get('/api/animals', (req, res) => {
@@ -96,5 +115,12 @@ app.post('/api/animals', (req,res) =>{
 //set an ID based on what the next index of the animals array will be (the index of 0 but ID is 1, so going length is perfect for incrementing)
 req.body.id = animals.length.toString();
 
-res.json(req.body);
+//if any data in request is incorrect, send 400 back
+if(!validateAnimal(req.body)) {
+    res.status(400).send('The Animal is not properly formatted');
+} else {
+//add the animal to the JSON file and the animals array
+const animal = createNewAnimal(req.body,animals);
+res.json(animal);
+}
 });
