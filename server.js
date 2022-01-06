@@ -5,9 +5,6 @@
 //4 - declared an object called animals where its data is equal to the json data in animals.json
 //5 - started the app listener to run on port 3001
 
-
-
-
 const express = require('express');
 const PORT = process.env.PORT || 3001;
 const app = express();
@@ -47,15 +44,30 @@ function filterByQuery(query, animalsArray) {
     return filteredResults;
 }
 
+//function to find by ID
+function findById(id,animalsArray) {
+    const result = animalsArray.filter(animal => animal.id === id)[0];
+    return result;
+}
 
 //adding a route to the animals object
 app.get('/api/animals', (req, res) => {
     let results = animals;
-    //if the query result in the URL is true or matches, run the filter function to set values
+    //if the received request includes a query in the address bar, run the filter function to set values
     if(req.query) {
         results = filterByQuery(req.query, results);
     }
     res.json(results);
+});
+
+//add a route to get the animals by ID
+app.get('/api/animals/:id', (req,res) => {
+    const result = findById(req.params.id, animals);
+    if (result) {
+        res.json(result);
+    } else {
+        res.send(404);
+    }
 });
 
 //start the listener for express
