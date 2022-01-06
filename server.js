@@ -26,7 +26,7 @@ function filterByQuery(query, animalsArray) {
         }
     }
 
-    //then, we must loop through each of the traits
+    //then, we must loop through each of the traitss
     personalityTraitsArray.forEach(trait => {
         filteredResults = filteredResults.filter(
             animal => animal.personalityTraits.indexOf(trait) !== -1
